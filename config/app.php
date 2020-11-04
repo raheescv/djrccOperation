@@ -171,7 +171,6 @@ return [
         Yajra\DataTables\DataTablesServiceProvider::class,
         Yoeunes\Toastr\ToastrServiceProvider::class,
         OwenIt\Auditing\AuditingServiceProvider::class,
-        Barryvdh\DomPDF\ServiceProvider::class,
         Elibyy\TCPDF\ServiceProvider::class,
 
         /*
@@ -235,7 +234,6 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'ActivityLog' => App\Helpers\ActivityLog::class,
-        // 'PDF' => Barryvdh\DomPDF\Facade::class,
         'PDF' => Elibyy\TCPDF\Facades\TCPDF::class
 
     ],
