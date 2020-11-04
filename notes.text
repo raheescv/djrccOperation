@@ -1,0 +1,10 @@
+
+https://github.com/laravel-notification-channels/telegram
+// for telegram api
+composer require laravel-notification-channels/telegram
+
+// config/app.php
+'providers' => [
+    ...
+    NotificationChannels\Telegram\TelegramServiceProvider::class,
+],
