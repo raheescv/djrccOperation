@@ -23,7 +23,6 @@ class LogController extends Controller
     $column[]='id';
     $column[]='date';
     $column[]='cordinator_id';
-    $column[]='controller_id';
     $column[]='entry_time';
     $column[]='exit_time';
     $column[]='remarks';
@@ -37,7 +36,8 @@ class LogController extends Controller
     $totalFiltered = $totalData;
     $datas=Log::orderBy('id');
     if($request['cordinator_id']) $datas->wherecordinator_id($request['cordinator_id']);
-    if($request['controller_id']) $datas->wherecontroller_id($request['controller_id']);
+    if($request['from_date']) $datas->where('date','>=',date('Y-m-d',strtotime($request['from_date'])));
+    if($request['to_date']) $datas->where('date','<=',date('Y-m-d',strtotime($request['to_date'])));
     $datas->orderBy($order,$dir);
     if(!empty($request->input('search.value'))) {
       $search = $request->input('search.value');
@@ -55,7 +55,6 @@ class LogController extends Controller
       $single=$value->toArray();
       $single['date'] =date("d-m-Y",strtotime($value->date));
       $single['Cordinator'] =$value->Cordinator->name;
-      $single['Controller'] =$value->Controller->name;
       $single['action'] ='<div class="col-md-4"><i table_id="'.$value->id.'" class="fa fa-2x fa-edit edit"></i></div>';;
       $single['action'].='<div class="col-md-4"><a href="'.url('Log/Print/'.$value->id).'"><i class="fa fa-2x fa-print"></i></a></div>';
       $single['action'].='<div class="col-md-4"><i table_id="'.$value->id.'" class="fa fa-2x fa-trash-o delete"></i></div>';;
@@ -85,7 +84,7 @@ class LogController extends Controller
     return response()->json($return);
   }
   public function Log_get_ajax($id) {
-    $Log=Log::with('Controller','Cordinator')->find($id);
+    $Log=Log::with('Cordinator')->find($id);
     return response()->json($Log);
   }
   public function Log_update_ajax(Request $request, $id) {
@@ -172,15 +171,7 @@ class LogController extends Controller
     <tr>
     <td style="height:70px;" align="center"> $Cordinator</td>
     <td style="height:70px;" align="center"> </td>
-    <td style="height:70px;" align="center" colspan="2"> </td>
-    </tr>
-    <tr>
-    <td align="center"> SAR Controller :</td>
-    <td align="center" colspan="3"> </td>
-    </tr>
-    <tr>
-    <td style="height:70px;" align="center"> $Controller</td>
-    <td style="height:70px;" align="center" colspan="3"> </td>
+    <td style="height:70px;" colspan="2"> $Log->remarks </td>
     </tr>
     <tr>
     <td align="center" colspan="2"> Entry Time</td>

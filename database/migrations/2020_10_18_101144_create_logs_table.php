@@ -10,13 +10,11 @@ class CreateLogsTable extends Migration
       $table->id();
       $table->date('date')->default(date("Y-m-d"));
       $table->unsignedBigInteger('cordinator_id');
-      $table->unsignedBigInteger('controller_id');
       $table->longText('remarks')->nullable();
       $table->time('entry_time');
       $table->time('exit_time');
       $table->timestamps();
       $table->foreign('cordinator_id')->references('id')->on('employees')->onDelete('restrict')->onUpdate('cascade');
-      $table->foreign('controller_id')->references('id')->on('employees')->onDelete('restrict')->onUpdate('cascade');
     });
   }
   public function down()

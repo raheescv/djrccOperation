@@ -35,16 +35,10 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
               <div class="form-group">
                 {{Form::label('cordinator_id','cordinator *',['class'=>'text-capitalize'])}}
                 {{Form::select('cordinator_id',[],'',['id'=>"modal_cordinator_id",'class'=>'form-control','required'])}}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                {{Form::label('controller_id','controller *',['class'=>'text-capitalize'])}}
-                {{Form::select('controller_id',[],'',['id'=>"modal_controller_id",'class'=>'form-control','required'])}}
               </div>
             </div>
           </div>
@@ -89,7 +83,6 @@ $('#{{$TableName}}_save').click(function() {
 $('#{{$TableName}}Form').validate({
   rules: {
     cordinator_id:{ required: true, },
-    controller_id:{ required: true, },
     date:{ required: true, },
     entry_time:{ required: true, },
     exit_time:{ required: true, },
@@ -97,7 +90,6 @@ $('#{{$TableName}}Form').validate({
   },
   messages: {
     cordinator_id:{ required: "Required", },
-    controller_id:{ required: "Required", },
     date:{ required: "Required", },
     entry_time:{ required: "Required", },
     exit_time:{ required: "Required", },
@@ -107,7 +99,7 @@ $('#{{$TableName}}Form').validate({
     error.insertAfter(element);
   }
 });
-$("#modal_cordinator_id,#modal_controller_id").select2({
+$("#modal_cordinator_id").select2({
   placeholder: "Select Employee",
   width: '100%',
   ajax: {
@@ -143,10 +135,6 @@ $('#exit_time').on("change", function(e) {
 });
 $('#modal_cordinator_id').on("select2:select", function(e) {
   // if($(this).val()=='Add') { $('#modal_cordinator_id').val('').change(); $('#EmployeeModal').modal('toggle'); return false; }
-  $('#modal_controller_id').select2('open');
-});
-$('#modal_controller_id').on("select2:select", function(e) {
-  // if($(this).val()=='Add') { $('#modal_controller_id').val('').change(); $('#EmployeeModal').modal('toggle'); return false; }
   $('#remarks').select();
 });
 </script>

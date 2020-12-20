@@ -8,7 +8,6 @@ class Log extends Model
   protected $fillable = [
     "date",
     "cordinator_id",
-    "controller_id",
     "remarks",
     "entry_time",
     "exit_time",
@@ -17,15 +16,11 @@ class Log extends Model
     return array_merge([
       'date'         => 'required',
       'cordinator_id'=> 'required',
-      'controller_id'=> 'required',
       'remarks'      => 'required',
       'entry_time'   => 'required',
       'exit_time'    => 'required',
     ],
     $merge);
-  }
-  public function Controller() {
-    return $this->belongsTo(Employee::class,'controller_id');
   }
   public function Cordinator() {
     return $this->belongsTo(Employee::class,'cordinator_id');

@@ -41,6 +41,28 @@ th{
           </div>
         </div>
         <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-2">
+              <div class="form-group">
+                {{Form::label('from_date','From Date')}}
+                {{Form::date('from_date',date('Y-m-d'),['class'=>'form-control table_change'])}}
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                {{Form::label('to_date','To Date')}}
+                {{Form::date('to_date',date('Y-m-d'),['class'=>'form-control table_change'])}}
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                {{Form::label('cordinator_id','Cordinator')}}
+                {{Form::select('cordinator_id',[''=>'Please Select'],[],['class'=>'form-control table_change'])}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ibox-content">
           <div class="table-responsive">
             <table class="table table-bordered table-hover table-striped" id='dataTable' width="100%">
               <thead>
@@ -48,7 +70,6 @@ th{
                   <th>#</th>
                   <th>date</th>
                   <th>cordinator</th>
-                  <th>controller</th>
                   <th>entry time</th>
                   <th>exit time</th>
                   <th>remarks</th>
@@ -102,24 +123,26 @@ var dataTable = $('#dataTable').dataTable({
     "dataType": "json",
     "type": "POST",
     data: function(d) {
-      d._token = "<?= csrf_token() ?>";
+      d._token        = "<?= csrf_token() ?>";
+      d.cordinator_id = $('#cordinator_id').val();
+      d.from_date     = $('#from_date').val();
+      d.to_date       = $('#to_date').val();
     },
   },
   dom: 'Bfrtip',
   buttons: [
     'colvis',
-		{extend: 'excel',footer: true,exportOptions: {columns: ':visible'}},
+    {extend: 'excel',footer: true,exportOptions: {columns: ':visible'}},
     'pageLength',
   ],
   "columns": [
     { "data": "id", 'visible': false },
     { "data": "date"},
     { "data": "Cordinator"},
-    { "data": "Controller"},
     { "data": "entry_time"},
     { "data": "exit_time"},
-    { "data": "remarks"},
-    { "data": "action", 'visible': true },
+    { "data": "remarks",'width':"50%" },
+    { "data": "action", 'visible': true,'width':"10%" },
   ],
 });
 $('.table_change').change(function(){
@@ -156,10 +179,34 @@ $(document).on('click', '.edit', function() {
     $('#{{$TableName}}Form input[name="entry_time"]').val(response.entry_time);
     $('#{{$TableName}}Form input[name="exit_time"]').val(response.exit_time);
     $('#modal_cordinator_id').empty().append('<option selected value="'+response.cordinator_id+'">'+response.cordinator.name+'</option>');
-    $('#modal_controller_id').empty().append('<option selected value="'+response.controller_id+'">'+response.controller.name+'</option>');
     $('#remarks').val(response.remarks);
     $('#{{$TableName}}Modal').modal('show');
   }, "json");
+});
+$("#cordinator_id").select2({
+  placeholder: "Select Employee",
+  width: '100%',
+  ajax: {
+    url: '<?= url('Employee/GetList') ?>',
+    dataType: 'json',
+    method: 'post',
+    delay: 250,
+    data: function(data) {
+      return {
+        _token    : "<?= csrf_token() ?>",
+        search_tag: data.term,
+        type      : 'name',
+      };
+    },
+    processResults: function(data, params) {
+      params.page = params.page || 1;
+      return {
+        results: $.map(data.items, function(obj) { return { id: obj.id, text: obj.name }; }),
+        pagination: { more: (params.page * 30) < data.total_count }
+      };
+    },
+    cache: true
+  },
 });
 </script>
 @endsection
