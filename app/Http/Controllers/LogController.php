@@ -120,7 +120,6 @@ class LogController extends Controller
     $data=[];
     $Log=Log::find($id);
     $Cordinator=$Log->Cordinator->name;
-    $Controller=$Log->Controller->name;
     $day=date('l',strtotime($Log->date));
     $date=date('d-m-Y',strtotime($Log->date));
     $html = <<<EOF
