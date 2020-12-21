@@ -107,15 +107,10 @@
                         <td>0</td>
                         <td>{{Form::date('date',date('Y-m-d'),['id'=>'date','class'=>'form-control'])}}</td>
                         <td>
-                          <div class="input-group clockpicker" data-placement="left" data-donetext="Done" data-align="top" data-autoclose="true">
-                            <input type="time" name='time' id="time" class="form-control" value="<?= date('H:i') ?>">
-                            <span class="input-group-addon">
-                              <span class="glyphicon glyphicon-time"></span>
-                            </span>
-                          </div>
+                          <input type="time" name='time' id="time" style="width:100%" class="form-control" value="<?= date('H:i') ?>">
                         </td>
-                        <td>{{Form::text('details','',['id'=>'details','class'=>'form-control','style'=>"width:100%"])}}</td>
-                        <td>{{Form::text('initial','',['id'=>'initial','class'=>'form-control','style'=>"width:100%"])}}</td>
+                        <td>{{Form::text('details','',['id'=>'details','class'=>'form-control cart_item','style'=>"width:100%"])}}</td>
+                        <td>{{Form::text('initial','',['id'=>'initial','class'=>'form-control cart_item','style'=>"width:100%"])}}</td>
                         <td><button type="button" tabindex="-1" class="btn btn-primary btn-sm" id="add_item"><i class="fa fa-plus"></i></button></td>
                       </tr>
                     </thead>
@@ -133,6 +128,7 @@
     </div>
   </div>
 </div>
+@component('component.'.'Beacon'.'Model',['TableName'=>'Beacon']) @endcomponent
 @endsection
 @section('script')
 <script src="{{ url('public/js/jquery.dataTables.min.js')}}"></script>
@@ -154,6 +150,10 @@
 <script src="{{ url('public/js/bootstrap-clockpicker.min.js')}}"></script>
 <script type="text/javascript">
 $('.clockpicker').clockpicker();
+$('.cart_item').keypress(function(event) {
+  var keycode = (event.keyCode ? event.keyCode : event.which);
+  if (keycode == '13') {$('#add_item').click(); return false; }
+});
 $(document).on('click', '#add_item', function() {
   var date       =$('#date').val();
   var time       =$('#time').val();
@@ -173,6 +173,8 @@ function add_to_cart(data) {
   var url_address = "{{url('SituationDetail/Store')}}";
   $.post(url_address, data, function(response) {
     if (response.result != 'success') { Swal.fire( 'Error!', response.result, 'error' ); return false; }
+    $('#details').val('');
+    $('#initial').val('');
     dataTable.fnDraw();
     $('#details').select();
   }, "json");
@@ -257,6 +259,7 @@ $('#beacon_type_id').on("select2:select", function(e) {
   $('#beacon_id').select2('open');
 });
 $('#beacon_id').on("select2:select", function(e) {
+  if($(this).val()=='Add') { $('#employee_id').val('').change(); $('#BeaconModal').modal('toggle'); return false; }
   $('#country_id').select2('open');
 });
 $('#country_id').on("select2:select", function(e) {

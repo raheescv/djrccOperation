@@ -71,6 +71,7 @@ class CreateBeaconsTable extends Migration
       $table->string('alternative_phone_number_2')->nullable();
       $table->string('alternative_phone_number_3')->nullable();
       $table->string('alternative_phone_number_4')->nullable();
+      $table->tinyInteger('status')->default(1)->comment('1=>New,2=>Test');
       $table->unsignedBigInteger('created_by');
       $table->unsignedBigInteger('updated_by');
       $table->softDeletes();

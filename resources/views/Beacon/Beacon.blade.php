@@ -35,6 +35,7 @@
         @if(!$Self['id'])
         <div class="ibox-content">
           {!! Form::open(['id'=>$TableName.'Form','url'=>$TableName.'/Store']) !!}
+          {{Form::hidden('status',$status)}}
           <div class="row">
             <div class="col-md-4">
               <div class="form-group">
@@ -69,7 +70,7 @@
                 <div class="col-lg-6">
                   <div class="form-group">
                     {{Form::label('hex_no','Beacon hex ID *',['class'=>"text-capitalize"])}}
-                    {{Form::text('hex_no',$Self['hex_no'],['class'=>'form-control','required','readonly'])}}
+                    {{Form::text('hex_no',$Self['hex_no'],['class'=>'form-control','required'])}}
                   </div>
                 </div>
                 <div class="col-lg-6">
@@ -95,7 +96,7 @@
                 </div>
               </div>
               @endif
-              <div class="col-lg-12">
+              <div class="col-lg-12" hidden>
                 <div class="col-lg-2">
                   <div class="form-group">
                     {{Form::label('special_status','Special Status',['class'=>"text-capitalize"])}}
@@ -433,11 +434,11 @@
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="row" hidden>
               <div class="col-lg-12">
                 <div class="form-group">
                   {{Form::label('alternative_name','Name of the Alternative 24-Hour Emergency Contact *',['class'=>"text-capitalize"])}}
-                  {{Form::text('alternative_name',$Self['alternative_name'],['class'=>'form-control','required'])}}
+                  {{Form::text('alternative_name',$Self['alternative_name'],['class'=>'form-control'])}}
                 </div>
               </div>
               <div class="col-lg-6">
@@ -453,7 +454,7 @@
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="row" hidden>
               <h3 align="center">Telephone</h3>
               <div class="col-lg-6">
                 <div class="form-group">
@@ -468,7 +469,7 @@
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="row" hidden>
               <div class="col-lg-6">
                 <div class="form-group">
                   {{Form::label('alternative_phone_number_3','Alternative Phone Number 3',['class'=>"text-capitalize"])}}

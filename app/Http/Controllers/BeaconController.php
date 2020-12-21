@@ -9,7 +9,13 @@ class BeaconController extends Controller
 {
   public function Beacons() {
     $TableName='Beacon';
-    return view('Beacon.Beacons',compact('TableName'));
+    $status=Beacon::NEWBEACON;
+    return view('Beacon.Beacons',compact('TableName','status'));
+  }
+  public function TestBeacons() {
+    $TableName='Beacon';
+    $status=Beacon::TESTBEACON;
+    return view('Beacon.Beacons',compact('TableName','status'));
   }
   public function BeaconTable(Request $request) {
     $column=[];
@@ -56,9 +62,9 @@ class BeaconController extends Controller
     $order=$column[$request->input('order.0.column')];
     $dir=$request->input('order.0.dir');
     $data=[];
-    $totalData = Beacon::count();
+    $totalData = Beacon::wherestatus($request['status'])->count();
     $totalFiltered = $totalData;
-    $datas=Beacon::orderBy('id');
+    $datas=Beacon::wherestatus($request['status']);
     if($request['beacon_type_id']) $datas->wherebeacon_type_id($request['beacon_type_id']);
     if($request['special_status']) $datas->wherespecial_status($request['special_status']);
     if($request['country_id']) $datas->wherecountry_id($request['country_id']);
@@ -66,6 +72,7 @@ class BeaconController extends Controller
     if($request['manufacturer']) $datas->wheremanufacturer($request['manufacturer']);
     if($request['activation_method']) $datas->whereactivation_method($request['activation_method']);
     if($request['beacon_home_device']) $datas->wherebeacon_home_device($request['beacon_home_device']);
+    if($request['from_date'] && $request['to_date']) $datas->whereBetween('created_at',[$request['from_date'],$request['to_date']]);
     $datas->orderBy($order,$dir);
     if(!empty($request->input('search.value'))) {
       $search = $request->input('search.value');
@@ -107,6 +114,7 @@ class BeaconController extends Controller
   }
   public function Beacon($id=null) {
     $TableName='Beacon';
+    $status=Beacon::NEWBEACON;
     if($id){
       $Self=Beacon::find($id);
       if(!$Self) return redirect('/Beacon');
@@ -117,7 +125,22 @@ class BeaconController extends Controller
         $Self[$value]='';
       }
     }
-    return view('Beacon.Beacon',compact('TableName','Self'));
+    return view('Beacon.Beacon',compact('TableName','Self','status'));
+  }
+  public function TestBeacon($id=null) {
+    $TableName='Beacon';
+    $status=Beacon::TESTBEACON;
+    if($id){
+      $Self=Beacon::find($id);
+      if(!$Self) return redirect('/TestBeacon');
+    } else {
+      $SelfModel = new Beacon;
+      $Self['id']='';
+      foreach ($SelfModel->getFillable() as $key => $value) {
+        $Self[$value]='';
+      }
+    }
+    return view('Beacon.Beacon',compact('TableName','Self','status'));
   }
   public function Beacon_store(Request $request) {
     DB::beginTransaction();
@@ -133,7 +156,15 @@ class BeaconController extends Controller
       $return['result']=$e->getMessage();
       return redirect()->back()->withInput()->with('error', $e->getMessage());
     }
-    return redirect('Beacon/'.$return_function['id'])->with('message', $return['result']);
+    if ($request->ajax() || $request->wantsJson()) {
+      return response()->json($return);
+    } else {
+      if($return_function['status']==Beacon::TESTBEACON){
+        return redirect('TestBeacon/'.$return_function['id'])->with('message', $return['result']);
+      } else {
+        return redirect('Beacon/'.$return_function['id'])->with('message', $return['result']);
+      }
+    }
   }
   public function Beacon_update(Request $request,$id) {
     DB::beginTransaction();
@@ -171,6 +202,8 @@ class BeaconController extends Controller
       $data=$data->get(['hex_no as name','id'])->toArray();
       $prepend['id']=0; $prepend['name']='All';
       $data=Arr::prepend($data,$prepend);
+      $single['id']='Add'; $single['name']='---- Add New ----';
+      if(!isset($request['type'])) $data[]=$single;
       $return['items'] = $data;
     } catch (Exception $e) {
       $return['result']=$e->getMessage();

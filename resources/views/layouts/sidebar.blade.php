@@ -32,7 +32,7 @@
       <li class="nav-item {{ (request()->is('CheckList')) ? 'active' : '' }}"><a href="{{ url('CheckList') }}"><i class="fa fa-th-large"></i> <span class="nav-label">CheckList</span></a></li>
       @endif
       @if($LoggedUser->UserTypePrivilegeModule('Beacons',$LoggedUser->user_type_id))
-      <li class="nav-item {{ (request()->is(['Beacons','Beacon','BeaconView/*','Beacon/*'])) ? 'active' : '' }}">
+      <li class="nav-item {{ (request()->is(['Beacons','Beacon','BeaconView/*','Beacon/*','TestBeacon','TestBeacon/*','TestBeacons','TestBeaconView/*'])) ? 'active' : '' }}">
         <a class="nav-link" href="#"><i class="fa fa-list"></i> <span class="nav-label">Beacons</span> <span class="fa arrow"></span></a>
         <ul class="nav nav-second-level">
           @if($LoggedUser->UserTypePrivilege('Beacons',$LoggedUser->user_type_id))
@@ -40,6 +40,12 @@
           @endif
           @if($LoggedUser->UserTypePrivilege('Beacons',$LoggedUser->user_type_id))
           <li class="nav-item {{ (request()->is(['Beacons','BeaconView/*'])) ? 'active' : '' }}"><a class="nav-link" href="{{ url('/Beacons') }}"><i class="fa fa-list"></i><span class="nav-label">Beacon List</span></a></li>
+          @endif
+          @if($LoggedUser->UserTypePrivilege('Beacons',$LoggedUser->user_type_id))
+          <li class="nav-item {{ (request()->is(['TestBeacon','TestBeacon/*'])) ? 'active' : '' }}"><a class="nav-link" href="{{ url('/TestBeacon') }}"><i class="fa fa-list"></i><span class="nav-label">Test</span></a></li>
+          @endif
+          @if($LoggedUser->UserTypePrivilege('Beacons',$LoggedUser->user_type_id))
+          <li class="nav-item {{ (request()->is(['TestBeacons','TestBeaconView/*'])) ? 'active' : '' }}"><a class="nav-link" href="{{ url('/TestBeacons') }}"><i class="fa fa-list"></i><span class="nav-label">Test Beacon List</span></a></li>
           @endif
         </ul>
       </li>

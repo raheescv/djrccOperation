@@ -7,6 +7,8 @@ use Auth;
 class Beacon extends Model {
   use HasFactory;
   use SoftDeletes;
+  const NEWBEACON  = 1;
+  const TESTBEACON = 2;
   protected $fillable = [
     "hex_no",
     "beacon_type_id",
@@ -24,16 +26,13 @@ class Beacon extends Model {
     "email",
     "telephone",
     "mobile",
-
     "vehicle_type_id",
     "radio_equipment",
     "color",
-
     "air_craft_manufacturer",
     "air_craft_operation_agency",
     "specific_usage",
     "additional_usage",
-
     "vessel_name",
     "no_of_life_boats",
     "no_of_life_rafts",
@@ -41,7 +40,6 @@ class Beacon extends Model {
     "radio_call_sign_decode",
     "inmarsat",
     "vessel_cellular",
-
     "manufacturer",
     "model_no",
     "c_s_type_approval_no",
@@ -64,6 +62,7 @@ class Beacon extends Model {
     "alternative_phone_number_4",
     "created_by",
     "updated_by",
+    "status",
   ];
   public static function rules ($id=0, $merge=[]) {
     return array_merge([
@@ -143,6 +142,7 @@ class Beacon extends Model {
       if($validator->fails())  { foreach ($validator->errors()->getMessages() as $key => $value) { throw new \Exception($value[0]); } }
       $Self=Self::create($data);
       $return['id']=$Self->id;
+      $return['status']=$Self->status;
       $return['result']='success';
     } catch (\Exception $e) {
       $return['result']=$e->getMessage();;

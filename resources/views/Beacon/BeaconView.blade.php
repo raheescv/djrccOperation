@@ -11,7 +11,9 @@
 @section('content')
 <div class="row wrapper border-bottom white-bg page-heading">
   <div class="col-sm-4">
-    <h2>Beacon</h2>
+    <h2>
+      @if($Self['status']==Beacon::TESTBEACON) Test @endif Beacon
+    </h2>
     <ol class="breadcrumb">
       <li><a href="{{ url('/') }}"><i class="fa fa-2x fa-home"></i></a></li>
       <li><a href="{{ url('Beacons') }}">Beacons</a></li>
@@ -20,7 +22,11 @@
   </div>
   <div class="col-sm-8">
     <div class="title-action">
+      @if($Self['status']==Beacon::TESTBEACON)
+      <a href="{{url('TestBeacons')}}" class="btn btn-success" >Test Beacon List</a>
+      @else
       <a href="{{url('Beacons')}}" class="btn btn-success" >Beacon List</a>
+      @endif
     </div>
   </div>
 </div>
@@ -31,7 +37,13 @@
         <div class="ibox-title">
           <h5>{{$TableName}}<small> {{$Self['beacon_type_id']}} Information</small></h5>
           <div class="ibox-tools">
-            <a href="{{url('Beacon/'.$Self['id'])}}"><i class="fa fa-edit"></i>Edit</a>
+            @if($LoggedUser->UserTypePrivilege('BeaconEdit',$LoggedUser->user_type_id))
+              @if($Self['status']==Beacon::TESTBEACON)
+              <a href="{{url('TestBeacon/'.$Self['id'])}}"><i class="fa fa-edit"></i>Edit</a>
+              @else
+              <a href="{{url('Beacon/'.$Self['id'])}}"><i class="fa fa-edit"></i>Edit</a>
+              @endif
+            @endif
           </div>
         </div>
         <div class="ibox-content">
@@ -54,15 +66,15 @@
                     <th class="text-capitalize">country code</th>
                     <td>{{$Self->Country?$Self->Country->code:''}}</td>
                   </tr>
-                  <tr>
+                  <tr hidden>
                     <th class="text-capitalize">special status</th>
                     <td>{{$Self['special_status']}}</td>
                   </tr>
-                  <tr>
+                  <tr hidden>
                     <th class="text-capitalize">security question</th>
                     <td>{{$Self['security_question']}}</td>
                   </tr>
-                  <tr>
+                  <tr hidden>
                     <th class="text-capitalize">security answer</th>
                     <td>{{$Self['security_answer']}}</td>
                   </tr>
@@ -265,58 +277,58 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <th class="text-capitalize">primary name</th>
+                    <th class="text-capitalize"> name</th>
                     <td>{{$Self['primary_name']}}</td>
                   </tr>
                   <tr>
-                    <th class="text-capitalize">primary address line 1</th>
+                    <th class="text-capitalize"> address line 1</th>
                     <td>{{$Self['primary_address_line_1']}}</td>
                   </tr>
                   <tr>
-                    <th class="text-capitalize">primary address line 2</th>
+                    <th class="text-capitalize"> address line 2</th>
                     <td>{{$Self['primary_address_line_2']}}</td>
                   </tr>
                   <tr>
-                    <th class="text-capitalize">primary phone number 1</th>
+                    <th class="text-capitalize"> phone number 1</th>
                     <td>{{$Self['primary_phone_number_1']}}</td>
                   </tr>
                   <tr>
-                    <th class="text-capitalize">primary phone number 2</th>
+                    <th class="text-capitalize"> phone number 2</th>
                     <td>{{$Self['primary_phone_number_2']}}</td>
                   </tr>
                   <tr>
-                    <th class="text-capitalize">primary phone number 3</th>
+                    <th class="text-capitalize"> phone number 3</th>
                     <td>{{$Self['primary_phone_number_3']}}</td>
                   </tr>
                   <tr>
-                    <th class="text-capitalize">primary phone number 4</th>
+                    <th class="text-capitalize"> phone number 4</th>
                     <td>{{$Self['primary_phone_number_4']}}</td>
                   </tr>
-                  <tr>
+                  <tr hidden>
                     <th class="text-capitalize">alternative name</th>
                     <td>{{$Self['alternative_name']}}</td>
                   </tr>
-                  <tr>
+                  <tr hidden>
                     <th class="text-capitalize">alternative address line 1</th>
                     <td>{{$Self['alternative_address_line_1']}}</td>
                   </tr>
-                  <tr>
+                  <tr hidden>
                     <th class="text-capitalize">alternative address line 2</th>
                     <td>{{$Self['alternative_address_line_2']}}</td>
                   </tr>
-                  <tr>
+                  <tr hidden>
                     <th class="text-capitalize">alternative phone number 1</th>
                     <td>{{$Self['alternative_phone_number_1']}}</td>
                   </tr>
-                  <tr>
+                  <tr hidden>
                     <th class="text-capitalize">alternative phone number 2</th>
                     <td>{{$Self['alternative_phone_number_2']}}</td>
                   </tr>
-                  <tr>
+                  <tr hidden>
                     <th class="text-capitalize">alternative phone number 3</th>
                     <td>{{$Self['alternative_phone_number_3']}}</td>
                   </tr>
-                  <tr>
+                  <tr hidden>
                     <th class="text-capitalize">alternative phone number 4</th>
                     <td>{{$Self['alternative_phone_number_4']}}</td>
                   </tr>

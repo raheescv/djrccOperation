@@ -42,6 +42,9 @@
           @if($LoggedUser->UserTypePrivilege('Settings',$LoggedUser->user_type_id))
           <li><a href="{{ url('/Settings') }}">Settings</a></li>
           @endif
+          @if($LoggedUser->UserTypePrivilege('Country',$LoggedUser->user_type_id))
+          <li><a href="{{ url('/Country') }}">Country</a></li>
+          @endif
           @if($LoggedUser->UserTypePrivilege('Download',$LoggedUser->user_type_id))
           <li><a href="{{ url('/Download') }}">BackupDB</a></li>
           @endif

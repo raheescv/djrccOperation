@@ -225,7 +225,6 @@ class CheckListController extends Controller
     PDF::AddPage();
     PDF::Image(url('public/image/pdf_header.png'), '', '', 190, 40, '', '', 'T', false, 300, '', false, false, 1, false, false, false);
     PDF::writeHTML($html, true, false, true, false, '');
-    PDF::Image(url('public/image/pdf_header.png'), '', 236, 190, 40, '', '', 'T', false, 300, '', false, false, 1, false, false, false);
     PDF::lastPage();
     PDF::Output('example_008.pdf', 'I');
   }

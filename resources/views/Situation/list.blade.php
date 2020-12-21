@@ -202,6 +202,7 @@ $("#beacon_id").select2({
       return {
         _token        : "<?= csrf_token() ?>",
         search_tag    : data.term,
+        type          :true,
         beacon_type_id: $('#beacon_type_id').val(),
       };
     },

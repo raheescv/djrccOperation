@@ -46,8 +46,8 @@
         </div>
         @endif
       </div>
-      <div class="row">
-        <div class="col-lg-4">
+      <div class="row" hidden>
+        <div class="col-lg-4" hidden>
           <div class="ibox float-e-margins">
             <div class="ibox-title">
               <h5>Document Expiry</h5>
@@ -78,7 +78,7 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-4" hidden>
           <div class="ibox float-e-margins">
             <div class="ibox-title">
               <h5>Reminder</h5>

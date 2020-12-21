@@ -5,7 +5,6 @@
 <link rel="stylesheet" href="{{ url('public/css/dataTables.responsive.css') }}" />
 <link rel="stylesheet" href="{{ url('public/css/dataTables.tableTools.min.css') }}" />
 <link rel="stylesheet" href="{{ url('public/css/fixedHeader.dataTables.min.css') }}" />
-<link rel="stylesheet" href="{{ url('public/css/bootstrap-clockpicker.min.css') }}" />
 <style media="screen">
 th{
   text-transform: capitalize;
@@ -46,19 +45,8 @@ th{
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>time</th>
-                  <th>date</th>
-                  <th>sarp data</th>
-                  <th>orbit data</th>
-                  <th>ftp link</th>
-                  <th>aftn link</th>
-                  <th>amhs link</th>
-                  <th>tele fax</th>
-                  <th>printer</th>
-                  <th>ops room status</th>
-                  <th>leo lut</th>
-                  <th>geo lut</th>
-                  <th>employee</th>
+                  <th>Name</th>
+                  <th>Code</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -78,22 +66,13 @@ th{
 <script src="{{ url('public/js/dataTables.jqueryui.min.js')}}"></script>
 <script src="{{ url('public/js/dataTables.buttons.min.js')}}"></script>
 <script src="{{ url('public/js/buttons.jqueryui.min.js')}}"></script>
+<script src="{{ url('public/js/vfs_fonts.js')}}"></script>
 <script src="{{ url('public/js/dataTables.fixedColumns.min.js')}}"></script>
 <script src="{{ url('public/js/buttons.colVis.min.js')}}"></script>
 <script src="{{ url('public/js/dataTables.fixedHeader.min.js')}}"></script>
 <script src="{{ url('public/js/dataTables.bootstrap.min.js')}}"></script>
 <script src="{{ url('public/js/dataTables.responsive.js')}}"></script>
 <script src="{{ url('public/js/dataTables.tableTools.min.js')}}"></script>
-<script src="{{ url('public/js/buttons.flash.min.js')}}"></script>
-<script src="{{ url('public/js/jszip.min.js')}}"></script>
-<script src="{{ url('public/js/pdfmake.min.js')}}"></script>
-<script src="{{ url('public/js/vfs_fonts.js')}}"></script>
-<script src="{{ url('public/js/buttons.html5.min.js')}}"></script>
-<script src="{{ url('public/js/buttons.print.min.js')}}"></script>
-<script src="{{ url('public/js/bootstrap-clockpicker.min.js')}}"></script>
-<script type="text/javascript">
-$('.clockpicker').clockpicker();
-</script>
 <script type="text/javascript">
 $('#table_add_button').click(function() {
   $('#{{$TableName}}Form')[0].reset();
@@ -115,24 +94,12 @@ var dataTable = $('#dataTable').dataTable({
   dom: 'Bfrtip',
   buttons: [
     'colvis',
-		{extend: 'excel',footer: true,exportOptions: {columns: ':visible'}},
     'pageLength',
   ],
   "columns": [
     { "data": "id", 'visible': false },
-    { "data": "time",'visible':true},
-    { "data": "date",'visible':true},
-    { "data": "sarp_data",'visible':true},
-    { "data": "orbit_data",'visible':true},
-    { "data": "ftp_link",'visible':true},
-    { "data": "aftn_link",'visible':true},
-    { "data": "amhs_link",'visible':true},
-    { "data": "tele_fax",'visible':true},
-    { "data": "printer",'visible':true},
-    { "data": "ops_room_status",'visible':true},
-    { "data": "leo_lut",'visible':true},
-    { "data": "geo_lut",'visible':true},
-    { "data": "Employee",'visible':true},
+    { "data": "name", "width":"80%"},
+    { "data": "code", "width":"10%"},
     { "data": "action", 'visible': true },
   ],
 });
@@ -166,19 +133,8 @@ $(document).on('click', '.edit', function() {
   url_address = '{{$TableName}}/Get/' + table_id;
   $.get(url_address, function(response) {
     $('#{{$TableName}}Form input[name="url"]').val('<?= url($TableName.'/Update') ?>' + '/' + table_id);
-    $('#{{$TableName}}Form input[name="date"]').val(response.date);
-    $('#{{$TableName}}Form input[name="time"]').val(response.time);
-    $('#{{$TableName}}Form input[name="sarp_data"]').val(response.sarp_data);
-    $('#{{$TableName}}Form input[name="orbit_data"]').val(response.orbit_data);
-    $('#{{$TableName}}Form input[name="ftp_link"]').val(response.ftp_link);
-    $('#{{$TableName}}Form input[name="aftn_link"]').val(response.aftn_link);
-    $('#{{$TableName}}Form input[name="amhs_link"]').val(response.amhs_link);
-    $('#{{$TableName}}Form input[name="tele_fax"]').val(response.tele_fax);
-    $('#{{$TableName}}Form input[name="printer"]').val(response.printer);
-    $('#{{$TableName}}Form input[name="ops_room_status"]').val(response.ops_room_status);
-    $('#{{$TableName}}Form input[name="leo_lut"]').val(response.leo_lut);
-    $('#{{$TableName}}Form input[name="geo_lut"]').val(response.geo_lut);
-    $('#modal_employee_id').empty().append('<option selected value="'+response.employee_id+'">'+response.employee.name+'</option>');
+    $('#{{$TableName}}Form input[name="name"]').val(response.name);
+    $('#{{$TableName}}Form input[name="code"]').val(response.code);
     $('#{{$TableName}}Modal').modal('show');
   }, "json");
 });

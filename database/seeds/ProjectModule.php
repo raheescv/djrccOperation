@@ -16,16 +16,20 @@ class ProjectModule extends Seeder
     // $data[]=['module' => 'Tasks','sub_module'=>'Calender'  ];
     $data[]=['module' => 'Settings','sub_module'=>'Download'  ];
     $data[]=['module' => 'Settings','sub_module'=>'Settings'  ];
+    $data[]=['module' => 'Settings','sub_module'=>'Country'  ];
     $data[]=['module' => 'Settings','sub_module'=>'DocumentType'  ];
     $data[]=['module' => 'Employees','sub_module'=>'Employee'  ];
     // $data[]=['module' => 'Employees','sub_module'=>'Documents'  ];
     // $data[]=['module' => 'languages','sub_module'=>'languages'  ];
     $data[]=['module' => 'Beacons','sub_module'=>'Beacons'  ];
     $data[]=['module' => 'Beacons','sub_module'=>'Beacon'  ];
+    
     $data[]=['module' => 'Log','sub_module'=>'Log'  ];
     $data[]=['module' => 'CheckList','sub_module'=>'CheckList'  ];
     $data[]=['module' => 'Situations','sub_module'=>'Situations'  ];
     $data[]=['module' => 'Situations','sub_module'=>'Situation'  ];
+    
+    $data[]=['module' => 'Beacons','sub_module'=>'BeaconEdit'  ];
     DB::table('project_modules')->insert($data);
   }
 }

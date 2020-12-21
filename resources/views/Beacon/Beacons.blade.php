@@ -16,7 +16,9 @@ th{
 @section('content')
 <div class="row wrapper border-bottom white-bg page-heading">
   <div class="col-lg-10">
-    <h2>{{$TableName}}</h2>
+    <h2>
+      @if($status==Beacon::TESTBEACON) Test @endif {{$TableName}}
+    </h2>
     <ol class="breadcrumb">
       <li><a href="{{ url('/') }}"><i class="fa fa-2x fa-home"></i></a></li>
       <li><a>Master</a></li>
@@ -25,7 +27,11 @@ th{
   </div>
   <div class="col-sm-2">
     <div class="title-action">
+      @if($status==Beacon::TESTBEACON)
+      <a href="{{url('TestBeacon')}}" class="btn btn-success">New Test{{$TableName}}</a>
+      @else
       <a href="{{url('Beacon')}}" class="btn btn-success">New {{$TableName}}</a>
+      @endif
     </div>
   </div>
 </div>
@@ -49,7 +55,7 @@ th{
                 {{Form::select('beacon_type_id',[''=>'Please Select']+Beacon::typeOptions(),'',['class'=>'form-control select2_class table_change'])}}
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3" hidden>
               <div class="form-group">
                 {{Form::label('special_status','Special Status',['class'=>"text-capitalize"])}}
                 {{Form::select('special_status',[''=>'Please Select']+Beacon::specialStatusOptions(),'',['class'=>'form-control select2_class table_change'])}}
@@ -88,6 +94,20 @@ th{
               </div>
             </div>
           </div>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-group">
+                {{Form::label('from_date','From Date',['class'=>"text-capitalize"])}}
+                {{Form::date('from_date',date('Y-m-01'),['id'=>'from_date','class'=>'form-control table_change'])}}
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                {{Form::label('to_date','To Date',['class'=>"text-capitalize"])}}
+                {{Form::date('to_date',date('Y-m-d'),['id'=>'to_date','class'=>'form-control table_change'])}}
+              </div>
+            </div>
+          </div>
         </div>
         <div class="ibox-content">
           <div class="table-responsive">
@@ -98,9 +118,9 @@ th{
                   <th>hex no</th>
                   <th>beacon type</th>
                   <th>country</th>
-                  <th>security question</th>
-                  <th>security answer</th>
-                  <th>special status</th>
+                  <!-- <th>security question</th> -->
+                  <!-- <th>security answer</th> -->
+                  <!-- <th>special status</th> -->
                   <th>description</th>
                   <th>name</th>
                   <th>address</th>
@@ -167,13 +187,16 @@ var dataTable = $('#dataTable').dataTable({
     "dataType": "json",
     "type": "POST",
     data: function(d) {
-      d._token = "<?= csrf_token() ?>";
-      d.beacon_type_id=$("#beacon_type_id").val();
-      d.special_status=$("#special_status").val();
-      d.country_id=$("#country_id").val();
-      d.vehicle_type_id=$("#vehicle_type_id").val();
-      d.manufacturer=$("#manufacturer").val();
-      d.activation_method=$("#activation_method").val();
+      d._token            = "<?= csrf_token() ?>";
+      d.status            ='{{$status}}',
+      d.from_date         =$("#from_date").val();
+      d.to_date           =$("#to_date").val();
+      d.beacon_type_id    =$("#beacon_type_id").val();
+      d.special_status    =$("#special_status").val();
+      d.country_id        =$("#country_id").val();
+      d.vehicle_type_id   =$("#vehicle_type_id").val();
+      d.manufacturer      =$("#manufacturer").val();
+      d.activation_method =$("#activation_method").val();
       d.beacon_home_device=$("#beacon_home_device").val();
     },
   },
@@ -187,9 +210,9 @@ var dataTable = $('#dataTable').dataTable({
     { "data": "hex_no","visible":true},
     { "data": "beacon_type_id","visible":true},
     { "data": "country_id","visible":false},
-    { "data": "security_question","visible":false},
-    { "data": "security_answer","visible":false},
-    { "data": "special_status","visible":true},
+    // { "data": "security_question","visible":false},
+    // { "data": "security_answer","visible":false},
+    // { "data": "special_status","visible":true},
     { "data": "description","visible":false},
     { "data": "name","visible":true},
     { "data": "address","visible":false},

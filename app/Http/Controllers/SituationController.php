@@ -127,7 +127,7 @@ class SituationController extends Controller
     }
     return response()->json($return);
   }
-
+  
   public function SituationDetailTable(Request $request) {
     $column=[];
     $column[]='id';
@@ -156,6 +156,7 @@ class SituationController extends Controller
       $key++;
       $single['key'] =$key;
       $single['date'] =date("d-m-Y",strtotime($value->date));
+      $single['time'] =date("h:i A",strtotime($value->time));
       $single['action'] ='<div class="col-md-6"><i table_id="'.$value->id.'" class="fa fa-2x fa-trash-o delete"></i></div>';;
       $data[]=$single;
     }
@@ -196,7 +197,7 @@ class SituationController extends Controller
     }
     return response()->json($return);
   }
-
+  
   public function Situation_Print($id) {
     $data=[];
     $Situation=Situation::find($id);
@@ -289,7 +290,6 @@ class SituationController extends Controller
     EOF;
     // PDF::SetAutoPageBreak(TRUE, 50);
     PDF::writeHTML($html, true, false, true, false, '');
-    PDF::Image(url('public/image/pdf_header.png'), '', 236, 190, 40, '', '', 'T', false, 300, '', false, false, 1, false, false, false);
     PDF::lastPage();
     PDF::Output('situation.pdf', 'I');
   }

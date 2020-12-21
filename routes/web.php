@@ -99,9 +99,19 @@ Route::group(['middleware' => [
 		Route::post('Document/Update/{id}', 'EmployeeController@Document_update_ajax')->name('Document_update');
 		Route::get('Document/Delete/{id}' , 'EmployeeController@Document_destroy_ajax');
 
+		Route::get('Country'             , 'SettingsController@Country');
+		Route::post('CountryTable'       , 'SettingsController@CountryTable')->name('CountryTable');
+		Route::post('Country/Store'      , 'SettingsController@Country_store_ajax')->name('Country_store');
+		Route::get('Country/Get/{id}'    , 'SettingsController@Country_get_ajax');
+		Route::post('Country/Update/{id}', 'SettingsController@Country_update_ajax')->name('Country_update');
+		Route::get('Country/Delete/{id}' , 'SettingsController@Country_destroy_ajax');
+
 		Route::get('Beacons'            , 'BeaconController@Beacons');
+		Route::get('TestBeacons'        , 'BeaconController@TestBeacons');
 		Route::get('Beacon'             , 'BeaconController@Beacon');
 		Route::get('Beacon/{id}'        , 'BeaconController@Beacon');
+		Route::get('TestBeacon'         , 'BeaconController@TestBeacon');
+		Route::get('TestBeacon/{id}'    , 'BeaconController@TestBeacon');
 		Route::get('BeaconView/{id}'    , 'BeaconController@BeaconView');
 		Route::post('BeaconTable'       , 'BeaconController@BeaconTable')->name('BeaconTable');
 		Route::post('Beacon/Store'      , 'BeaconController@Beacon_store')->name('Beacon_store');
