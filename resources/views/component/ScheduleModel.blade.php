@@ -1,5 +1,5 @@
 <div id="{{$TableName}}Modal" class="modal fade" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-content">
         {!! Form::open(['id'=>$TableName.'Form','url'=>$TableName.'/Store']) !!}
@@ -9,13 +9,13 @@
         </div>
         <div class="modal-body">
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-6">
               <div class="form-group">
                 {{Form::label('date','date *',['class'=>'text-capitalize'])}}
                 {{Form::date('date',date('Y-m-d'),['class'=>'form-control','required'])}}
               </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
               {{Form::label('time','Time')}}
               <div class="input-group clockpicker" data-placement="left" data-donetext="Done" data-align="top" data-autoclose="true">
                 <input type="time" name='time' id="time" class="form-control" value="<?= date('H:i') ?>">
@@ -24,72 +24,20 @@
                 </span>
               </div>
             </div>
-            <div class="col-md-4">
+          </div>
+          <div class="row">
+            <div class="col-md-12">
               <div class="form-group">
-                {{Form::label('employee_id','employee *',['class'=>'text-capitalize'])}}
+                {{Form::label('employee_id','Employee *',['class'=>'text-capitalize'])}}
                 {{Form::select('employee_id',[],'',['id'=>"modal_employee_id",'class'=>'form-control','required'])}}
               </div>
             </div>
           </div>
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
               <div class="form-group">
-                {{Form::label('sarp_data','s a r p data',['class'=>'text-capitalize'])}}
-                {{Form::text('sarp_data','',['class'=>'form-control'])}}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                {{Form::label('orbit_data','orbit data',['class'=>'text-capitalize'])}}
-                {{Form::text('orbit_data','',['class'=>'form-control'])}}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                {{Form::label('ftp_link','f t p link',['class'=>'text-capitalize'])}}
-                {{Form::text('ftp_link','',['class'=>'form-control'])}}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                {{Form::label('aftn_link','a f t n link',['class'=>'text-capitalize'])}}
-                {{Form::text('aftn_link','',['class'=>'form-control'])}}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                {{Form::label('amhs_link','a m h s link',['class'=>'text-capitalize'])}}
-                {{Form::text('amhs_link','',['class'=>'form-control'])}}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                {{Form::label('tele_fax','tele/fax',['class'=>'text-capitalize'])}}
-                {{Form::text('tele_fax','',['class'=>'form-control'])}}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                {{Form::label('printer','printer',['class'=>'text-capitalize'])}}
-                {{Form::text('printer','',['class'=>'form-control'])}}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                {{Form::label('ops_room_status','o p s room status',['class'=>'text-capitalize'])}}
-                {{Form::text('ops_room_status','',['class'=>'form-control'])}}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                {{Form::label('leo_lut','l e o lut',['class'=>'text-capitalize'])}}
-                {{Form::text('leo_lut','',['class'=>'form-control'])}}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                {{Form::label('geo_lut','g e o lut',['class'=>'text-capitalize'])}}
-                {{Form::text('geo_lut','',['class'=>'form-control'])}}
+                {{Form::label('remarks','remarks',['class'=>'text-capitalize'])}}
+                {{Form::textarea('remarks','',['class'=>'form-control'])}}
               </div>
             </div>
           </div>
@@ -120,31 +68,25 @@ $('#{{$TableName}}_save').click(function() {
     if (response.result != 'success') { Swal.fire( 'Error!', response.result, 'error' ); return false; }
     $('#{{$TableName}}Form')[0].reset();
     $('#{{$TableName}}Modal').modal('hide');
-    dataTable.fnDraw();
+    dataTable.draw();
   }, "json");
 });
 $('#{{$TableName}}Form').validate({
   rules: {
     employee_id:{ required: true, },
-    controller_id:{ required: true, },
     date:{ required: true, },
-    entry_time:{ required: true, },
-    exit_time:{ required: true, },
-    remarks:{ required: true, },
+    time:{ required: true, },
   },
   messages: {
     employee_id:{ required: "Required", },
-    controller_id:{ required: "Required", },
     date:{ required: "Required", },
-    entry_time:{ required: "Required", },
-    exit_time:{ required: "Required", },
-    remarks:{ required: "Required", },
+    time:{ required: "Required", },
   },
   errorPlacement: function(error,element) {
     error.insertAfter(element);
   }
 });
-$("#modal_employee_id,#modal_controller_id").select2({
+$("#modal_employee_id").select2({
   placeholder: "Select Employee",
   width: '100%',
   ajax: {
@@ -170,20 +112,13 @@ $("#modal_employee_id,#modal_controller_id").select2({
   },
 });
 $('#date').on("change", function(e) {
-  $('#entry_time').click();
+  $('#time').click();
 });
-$('#entry_time').on("change", function(e) {
-  $('#exit_time').click();
-});
-$('#exit_time').on("change", function(e) {
+$('#time').on("change", function(e) {
   $('#modal_employee_id').select2('open');
 });
 $('#modal_employee_id').on("select2:select", function(e) {
   // if($(this).val()=='Add') { $('#modal_employee_id').val('').change(); $('#EmployeeModal').modal('toggle'); return false; }
-  $('#modal_controller_id').select2('open');
-});
-$('#modal_controller_id').on("select2:select", function(e) {
-  // if($(this).val()=='Add') { $('#modal_controller_id').val('').change(); $('#EmployeeModal').modal('toggle'); return false; }
   $('#remarks').select();
 });
 </script>

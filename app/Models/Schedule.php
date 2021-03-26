@@ -2,28 +2,25 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-class Log extends Model
+class Schedule extends Model
 {
   use HasFactory;
   protected $fillable = [
-    "date",
-    "cordinator_id",
-    "remarks",
-    "entry_time",
-    "exit_time",
+    'employee_id',
+    'date',
+    'time',
+    'remarks',
   ];
   public static function rules ($id=0, $merge=[]) {
     return array_merge([
-      'date'         => 'required',
-      'cordinator_id'=> 'required',
-      'remarks'      => 'required',
-      'entry_time'   => 'required',
-      'exit_time'    => 'required',
+      'employee_id'=> 'required',
+      'date'       => 'required',
+      'time'       => 'required',
     ],
     $merge);
   }
-  public function Cordinator() {
-    return $this->belongsTo(Employee::class,'cordinator_id');
+  public function Employee() {
+    return $this->belongsTo(Employee::class,'employee_id');
   }
   public function selfCreate($data) {
     try {
@@ -51,7 +48,7 @@ class Log extends Model
   public function selfDelete($id) {
     try {
       $Self=Self::find($id);
-      if(!$Self->delete()) throw new \Exception("Cant Delete This Log ". $id, 1);
+      if(!$Self->delete()) throw new \Exception("Cant Delete This Schedule ". $id, 1);
       $return['result']='success';
     } catch (\Exception $e) {
       $return['result']=$e->getMessage();;

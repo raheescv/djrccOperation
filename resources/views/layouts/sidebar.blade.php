@@ -28,6 +28,9 @@
       @if($LoggedUser->UserTypePrivilegeModule('Log',$LoggedUser->user_type_id))
       <li class="nav-item {{ (request()->is('Log')) ? 'active' : '' }}"><a href="{{ url('Log') }}"><i class="fa fa-th-large"></i> <span class="nav-label">Log</span></a></li>
       @endif
+      @if($LoggedUser->UserTypePrivilege('Schedule',$LoggedUser->user_type_id))
+      <li class="nav-item {{ (request()->is('Schedule')) ? 'active' : '' }}"><a href="{{ url('Schedule') }}"><i class="fa fa-th-large"></i> <span class="nav-label">Schedule</span></a></li>
+      @endif
       @if($LoggedUser->UserTypePrivilegeModule('CheckList',$LoggedUser->user_type_id))
       <li class="nav-item {{ (request()->is('CheckList')) ? 'active' : '' }}"><a href="{{ url('CheckList') }}"><i class="fa fa-th-large"></i> <span class="nav-label">CheckList</span></a></li>
       @endif

@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="{{ url('public/css/dataTables.responsive.css') }}" />
 <link rel="stylesheet" href="{{ url('public/css/dataTables.tableTools.min.css') }}" />
 <link rel="stylesheet" href="{{ url('public/css/fixedHeader.dataTables.min.css') }}" />
+<link rel="stylesheet" href="{{ url('public/css/select.dataTables.min.css') }}" />
 <link rel="stylesheet" href="{{ url('public/css/bootstrap-clockpicker.min.css') }}" />
 <style media="screen">
 th{
@@ -41,25 +42,50 @@ th{
           </div>
         </div>
         <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-2">
+              <div class="form-group">
+                {{Form::label('from_date','From Date')}}
+                {{Form::date('from_date',date('Y-m-d'),['class'=>'form-control table_change'])}}
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                {{Form::label('to_date','To Date')}}
+                {{Form::date('to_date',date('Y-m-d'),['class'=>'form-control table_change'])}}
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                {{Form::label('from_time','From Time')}}
+                {{Form::time('from_time',date('00:01'),['class'=>'form-control table_change'])}}
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                {{Form::label('to_time','To Time')}}
+                {{Form::time('to_time',date('23:59'),['class'=>'form-control table_change'])}}
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                {{Form::label('employee_id','Employee')}}
+                {{Form::select('employee_id',[''=>'Please Select'],[],['class'=>'form-control table_change'])}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ibox-content">
           <div class="table-responsive">
             <table class="table table-bordered table-hover table-striped" id='dataTable' width="100%">
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>time</th>
+                  <th>Employee</th>
                   <th>date</th>
-                  <th>sarp data</th>
-                  <th>orbit data</th>
-                  <th>ftp link</th>
-                  <th>aftn link</th>
-                  <th>amhs link</th>
-                  <th>tele fax</th>
-                  <th>printer</th>
-                  <th>ops room status</th>
-                  <th>leo lut</th>
-                  <th>geo lut</th>
-                  <th>employee</th>
-                  <th>Action</th>
+                  <th>time</th>
+                  <th>remarks</th>
+                  <th>action</th>
                 </tr>
               </thead>
               <tbody>
@@ -85,6 +111,7 @@ th{
 <script src="{{ url('public/js/dataTables.responsive.js')}}"></script>
 <script src="{{ url('public/js/dataTables.tableTools.min.js')}}"></script>
 <script src="{{ url('public/js/buttons.flash.min.js')}}"></script>
+<script src="{{ url('public/js/dataTables.select.min.js')}}"></script>
 <script src="{{ url('public/js/jszip.min.js')}}"></script>
 <script src="{{ url('public/js/pdfmake.min.js')}}"></script>
 <script src="{{ url('public/js/vfs_fonts.js')}}"></script>
@@ -99,7 +126,7 @@ $('#table_add_button').click(function() {
   $('#{{$TableName}}Form')[0].reset();
   $('#{{$TableName}}Form input[name="url"]').val('<?= url($TableName.'/Store') ?>');
 });
-var dataTable = $('#dataTable').dataTable({
+dataTable = $('#dataTable').DataTable({
   "processing": true,
   "serverSide": true,
   "fixedHeader": true,
@@ -109,35 +136,47 @@ var dataTable = $('#dataTable').dataTable({
     "dataType": "json",
     "type": "POST",
     data: function(d) {
-      d._token = "<?= csrf_token() ?>";
+      d._token        = "<?= csrf_token() ?>";
+      d.employee_id = $('#employee_id').val();
+      d.from_date     = $('#from_date').val();
+      d.to_date       = $('#to_date').val();
+      d.from_time     = $('#from_time').val();
+      d.to_time       = $('#to_time').val();
     },
   },
   dom: 'Bfrtip',
+  select: true,
   buttons: [
     'colvis',
-		{extend: 'excel',footer: true,exportOptions: {columns: ':visible'}},
+    {extend: 'excel',footer: true,exportOptions: {columns: ':visible'}},
+    {
+      text: 'Print Selected',
+      action: function ( e, dt, node, config ) {
+        var selectedRows=dataTable.rows('.selected').data();
+        var selectedId=[];
+        selectedRows.each((item, i) => { selectedId.push(item.id); });
+        if(!selectedId.length){ Swal.fire( 'Error!', 'Please Select Any Row To Print it', 'error' ); return false }
+        var url_address = '{{url($TableName."/Print")}}/'+selectedId;
+        window.open(url_address, '_blank');
+      }
+    },
     'pageLength',
   ],
+  select: {
+    style:    'os',
+    selector: 'td:first-child'
+  },
   "columns": [
-    { "data": "id", 'visible': false },
-    { "data": "time",'visible':true},
-    { "data": "date",'visible':true},
-    { "data": "sarp_data",'visible':true},
-    { "data": "orbit_data",'visible':true},
-    { "data": "ftp_link",'visible':true},
-    { "data": "aftn_link",'visible':true},
-    { "data": "amhs_link",'visible':true},
-    { "data": "tele_fax",'visible':true},
-    { "data": "printer",'visible':true},
-    { "data": "ops_room_status",'visible':true},
-    { "data": "leo_lut",'visible':true},
-    { "data": "geo_lut",'visible':true},
-    { "data": "Employee",'visible':true},
-    { "data": "action", 'visible': true },
+    { "data": "id", 'visible': true,'className':"select-checkbox" },
+    { "data": "Employee"},
+    { "data": "date"},
+    { "data": "time"},
+    { "data": "remarks",'width':"50%" },
+    { "data": "action", 'visible': true,'width':"10%" },
   ],
 });
 $('.table_change').change(function(){
-  dataTable.fnDraw();
+  dataTable.draw();
 });
 </script>
 <script type="text/javascript">
@@ -156,7 +195,7 @@ $(document).on('click', '.delete', function() {
       var url_address = '{{$TableName}}/Delete/' + table_id;
       $.get(url_address, function(response) {
         if (response.result != 'success') { Swal.fire( 'Error!', response.result, 'error' ); return false; }
-        dataTable.fnDraw();
+        dataTable.draw();
       }, "json");
     }
   });
@@ -167,20 +206,37 @@ $(document).on('click', '.edit', function() {
   $.get(url_address, function(response) {
     $('#{{$TableName}}Form input[name="url"]').val('<?= url($TableName.'/Update') ?>' + '/' + table_id);
     $('#{{$TableName}}Form input[name="date"]').val(response.date);
-    $('#{{$TableName}}Form input[name="time"]').val(response.time);
-    $('#{{$TableName}}Form input[name="sarp_data"]').val(response.sarp_data);
-    $('#{{$TableName}}Form input[name="orbit_data"]').val(response.orbit_data);
-    $('#{{$TableName}}Form input[name="ftp_link"]').val(response.ftp_link);
-    $('#{{$TableName}}Form input[name="aftn_link"]').val(response.aftn_link);
-    $('#{{$TableName}}Form input[name="amhs_link"]').val(response.amhs_link);
-    $('#{{$TableName}}Form input[name="tele_fax"]').val(response.tele_fax);
-    $('#{{$TableName}}Form input[name="printer"]').val(response.printer);
-    $('#{{$TableName}}Form input[name="ops_room_status"]').val(response.ops_room_status);
-    $('#{{$TableName}}Form input[name="leo_lut"]').val(response.leo_lut);
-    $('#{{$TableName}}Form input[name="geo_lut"]').val(response.geo_lut);
+    $('#{{$TableName}}Form input[name="entry_time"]').val(response.entry_time);
+    $('#{{$TableName}}Form input[name="exit_time"]').val(response.exit_time);
     $('#modal_employee_id').empty().append('<option selected value="'+response.employee_id+'">'+response.employee.name+'</option>');
+    $('#remarks').val(response.remarks);
     $('#{{$TableName}}Modal').modal('show');
   }, "json");
+});
+$("#employee_id").select2({
+  placeholder: "Select Employee",
+  width: '100%',
+  ajax: {
+    url: '<?= url('Employee/GetList') ?>',
+    dataType: 'json',
+    method: 'post',
+    delay: 250,
+    data: function(data) {
+      return {
+        _token    : "<?= csrf_token() ?>",
+        search_tag: data.term,
+        type      : 'name',
+      };
+    },
+    processResults: function(data, params) {
+      params.page = params.page || 1;
+      return {
+        results: $.map(data.items, function(obj) { return { id: obj.id, text: obj.name }; }),
+        pagination: { more: (params.page * 30) < data.total_count }
+      };
+    },
+    cache: true
+  },
 });
 </script>
 @endsection

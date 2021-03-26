@@ -8,10 +8,12 @@ use DB;
 use Form;
 use Session;
 use App\Models\Employee;
+use App\Models\Schedule;
 use App\Models\DocumentType;
 use App\Models\Document;
 use Yajra\Datatables\Datatables;
 use Illuminate\Support\Arr;
+use PDF;
 class EmployeeController extends Controller
 {
   public function Employee() {
@@ -125,7 +127,7 @@ class EmployeeController extends Controller
     }
     return response()->json($return);
   }
-
+  
   public function Document() {
     $TableName='Document';
     return view('Employee.Document',compact('TableName'));
@@ -230,5 +232,176 @@ class EmployeeController extends Controller
       $return['result']=$e->getMessage();
     }
     return response()->json($return);
+  }
+  
+  public function Schedule() {
+    $TableName='Schedule';
+    return view('Employee.Schedule',compact('TableName'));
+  }
+  public function ScheduleTable(Request $request) {
+    $column=[];
+    $column[]='id';
+    $column[]='employee_id';
+    $column[]='date';
+    $column[]='time';
+    $column[]='remarks';
+    $column[]='id';
+    $limit=$request->input('length');
+    $start=$request->input('start');
+    $order=$column[$request->input('order.0.column')];
+    $dir=$request->input('order.0.dir');
+    $data=[];
+    $totalData = Schedule::count();
+    $totalFiltered = $totalData;
+    $datas=Schedule::orderBy('id');
+    if($request['employee_id']) $datas->whereemployee_id($request['employee_id']);
+    if($request['from_date']) $datas->where('date','>=',date('Y-m-d',strtotime($request['from_date'])));
+    if($request['to_date']) $datas->where('date','<=',date('Y-m-d',strtotime($request['to_date'])));
+    
+    if($request['from_time']) $datas->where('time','>=',date('H:i:s',strtotime($request['from_time'])));
+    if($request['to_time']) $datas->where('time','<=',date('H:i:s',strtotime($request['to_time'])));
+    
+    $datas->orderBy($order,$dir);
+    if(!empty($request->input('search.value'))) {
+      $search = $request->input('search.value');
+      $datas->where(function ($query) use ($search) {
+        $query->where('id' ,'like',"%{$search}%");
+        $query->orWhere('remarks','LIKE',"%{$search}%");
+      });
+    }
+    $totalFiltered=$datas->count();
+    $datas->offset($start);
+    $datas->limit($limit);
+    $datas=$datas->get();
+    $data=[];
+    foreach ($datas as $key => $value) {
+      $single=$value->toArray();
+      $single['time'] =date("H:i A",strtotime($value->time));
+      $single['date'] =date("d-m-Y",strtotime($value->date));
+      $single['Employee'] =$value->Employee->name;
+      $single['action'] ='<div class="col-md-4"><i table_id="'.$value->id.'" class="fa fa-2x fa-edit edit"></i></div>';;
+      // $single['action'].='<div class="col-md-4"><a href="'.url('Schedule/Print/'.$value->id).'"><i class="fa fa-2x fa-print"></i></a></div>';
+      $single['action'].='<div class="col-md-4"><i table_id="'.$value->id.'" class="fa fa-2x fa-trash-o delete"></i></div>';;
+      $data[]=$single;
+    }
+    $json_data = array(
+      "draw"            => intval($request->input('draw')),
+      "recordsTotal"    => intval($totalData),
+      "recordsFiltered" => intval($totalFiltered),
+      "data"            => $data
+    );
+    echo json_encode($json_data); exit;
+  }
+  public function Schedule_store_ajax(Request $request) {
+    DB::beginTransaction();
+    try {
+      $data=$request->all();
+      $SelfModel=new Schedule;
+      $return_function=$SelfModel->selfCreate($data);
+      if($return_function['result']!='success') throw new \Exception($return_function['result'], 1);
+      $return['result']='success';
+      DB::commit();
+    } catch (Exception $e) {
+      DB::rollback();
+      $return['result']=$e->getMessage();
+    }
+    return response()->json($return);
+  }
+  public function Schedule_get_ajax($id) {
+    $Schedule=Schedule::with('Employee')->find($id);
+    return response()->json($Schedule);
+  }
+  public function Schedule_update_ajax(Request $request, $id) {
+    DB::beginTransaction();
+    try {
+      $data=$request->all();
+      $SelfModel=new Schedule;
+      $return_function=$SelfModel->selfUpdate($data,$id);
+      if($return_function['result']!='success') throw new \Exception($return_function['result'], 1);
+      DB::commit();
+      $return['result']='success';
+    } catch (Exception $e) {
+      DB::rollback();
+      $return['result']=$e->getMessage();
+    }
+    return response()->json($return);
+  }
+  public function Schedule_destroy_ajax($id) {
+    try {
+      DB::beginTransaction();
+      $SelfModel=new Schedule;
+      $return_function=$SelfModel->selfDelete($id);
+      if($return_function['result']!='success') throw new \Exception($return_function['result'], 1);
+      $return['result']='success';
+      DB::commit();
+    } catch (Exception $e) {
+      DB::rollback();
+      $return['result']=$e->getMessage();
+    }
+    return response()->json($return);
+  }
+  
+  public function Schedule_Print($id) {
+    $data=[];
+    $id=explode(',',$id);
+    $Schedule=Schedule::whereIn('id',$id)->get();
+    $day=date('D',strtotime($Schedule[0]->date));
+    $date=date('d-m-Y',strtotime($Schedule[0]->date));
+    $html = <<<EOF
+    <style>
+    h1 {
+      color: navy;
+      font-family: times;
+      font-size: 24pt;
+    }
+    </style>
+    <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br />
+    <table>
+    <tr>
+    <td><h1 align="center">SCHEDULE REPORT</h1></td>
+    </tr>
+    </table>
+    <br />
+    EOF;
+    PDF::AddPage();
+    PDF::Image(url('public/image/pdf_header.png'), '', '', 190, 40, '', '', 'T', false, 300, '', false, false, 1, false, false, false);
+    PDF::writeHTML($html, true, false, true, false, '');
+    $tbody='';
+    foreach ($Schedule as $key => $value) {
+      $date=date('d-m-Y',strtotime($value->date));
+      $time=date('H:i a',strtotime($value->time));
+      $tbody.='<tr nobsr="true">';
+      $tbody.='<td style="width:45%"> '.$value->Employee->name.'</td>';
+      $tbody.='<td style="width:15%"> '.$date.'</td>';
+      $tbody.='<td style="width:10%"> '.$time.'</td>';
+      $tbody.='<td style="width:30%"> '.$value->remarks.'</td>';
+      $tbody.="</tr>";
+    }
+    $html = <<<EOF
+    <style>
+    .center {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    </style>
+    <table border="1" class='center'>
+    <thead align='center'>
+    <tr>
+    <th style="width:45%; text-align: center; vertical-align: middle;">Name</th>
+    <th style="width:15%; text-align: center; vertical-align: middle;">Date</th>
+    <th style="width:10%; text-align: center; vertical-align: middle;">Time</th>
+    <th style="width:30%; text-align: center; vertical-align: middle;">Signature</th>
+    </tr>
+    </thead>
+    <tbody align="center">
+    $tbody
+    <tbody>
+    </table>
+    <br />
+    EOF;
+    // PDF::SetAutoPageBreak(TRUE, 50);
+    PDF::writeHTML($html, true, false, true, false, '');
+    PDF::lastPage();
+    PDF::Output('Shedule.pdf', 'I');
   }
 }

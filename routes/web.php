@@ -126,6 +126,14 @@ Route::group(['middleware' => [
 		Route::get('Log/Get/{id}'    , 'LogController@Log_get_ajax');
 		Route::post('Log/Update/{id}', 'LogController@Log_update_ajax')->name('Log_update');
 		Route::get('Log/Delete/{id}' , 'LogController@Log_destroy_ajax');
+		
+		Route::get('Schedule'             , 'EmployeeController@Schedule');
+		Route::post('ScheduleTable'       , 'EmployeeController@ScheduleTable')->name('ScheduleTable');
+		Route::post('Schedule/Store'      , 'EmployeeController@Schedule_store_ajax')->name('Schedule_store');
+		Route::get('Schedule/Print/{ids}' , 'EmployeeController@Schedule_Print');
+		Route::get('Schedule/Get/{id}'    , 'EmployeeController@Schedule_get_ajax');
+		Route::post('Schedule/Update/{id}', 'EmployeeController@Schedule_update_ajax')->name('Schedule_update');
+		Route::get('Schedule/Delete/{id}' , 'EmployeeController@Schedule_destroy_ajax');
 
 		Route::get('CheckList'             , 'CheckListController@CheckList');
 		Route::post('CheckListTable'       , 'CheckListController@CheckListTable')->name('CheckListTable');

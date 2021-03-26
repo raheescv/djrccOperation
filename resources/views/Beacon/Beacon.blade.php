@@ -550,4 +550,11 @@ $(document).ready(function(){
   });
 });
 </script>
+<script type="text/javascript">
+@if($Self['id'])
+@if($Self['status']==Beacon::TESTBEACON)
+$('input,textarea,select').filter('[required]:visible').attr('required',false);
+@endif
+@endif
+</script>
 @endsection

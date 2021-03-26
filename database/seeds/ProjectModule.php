@@ -30,6 +30,8 @@ class ProjectModule extends Seeder
     $data[]=['module' => 'Situations','sub_module'=>'Situation'  ];
     
     $data[]=['module' => 'Beacons','sub_module'=>'BeaconEdit'  ];
+
+    $data[]=['module' => 'Employees','sub_module'=>'Schedule'  ];
     DB::table('project_modules')->insert($data);
   }
 }
